@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Nhật - Visa · Cẩm nang hồ sơ Visa đường xa</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+  <style>
+    :root{
+      --indigo-600: #4f46e5;
+      --muted: #6b7280;
+    }
+    body { font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; }
+    .card { background: white; border-radius: 0.6rem; box-shadow: 0 6px 20px rgba(15,23,42,0.06); padding: 1rem; }
+    .muted { color: var(--muted); }
+    .fade { animation: fadeIn .28s ease-in-out; }
+    @keyframes fadeIn { from {opacity:0; transform:translateY(6px)} to {opacity:1; transform:none} }
+    
+    /* Sidebar styles */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      width: 260px;
+      background: white;
+      box-shadow: 2px 0 10px rgba(15,23,42,0.08);
+      transform: translateX(-260px);
+      transition: transform 0.3s ease;
+      z-index: 100;
+      overflow-y: auto;
+      padding: 1.5rem;
+    }
+    
+    .sidebar.open {
+      transform: translateX(0);
+    }
+    
+    .content-wrap {
+      margin-left: 0;
+      transition: margin-left 0.3s ease;
+      padding: 2rem 1rem;
+    }
+    
+    .content-wrap.shifted {
+      margin-left: 260px;
+    }
+    
+    .menu-toggle {
+      position: fixed;
+      top: 1rem;
+      left: 1rem;
+      z-index: 101;
+      background: white;
+      border-radius: 0.5rem;
+      padding: 0.75rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      cursor: pointer;
+      transition: left 0.3s ease;
+    }
+    
+    .menu-toggle.shifted {
+      left: 271px;
+    }
+    
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.3);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+      z-index: 99;
+    }
+    
+    .overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+    
+    .scroll-y { max-height: 68vh; overflow:auto; }
+    pre.code { white-space: pre-wrap; background:#f8fafc; padding:0.75rem; border-radius:6px; }
+    .badge { background: rgba(79,70,229,0.08); color: var(--indigo-600); padding:0.15rem 0.4rem; border-radius:6px; font-weight:600; }
+    
+    @media (max-width: 768px) {
+      .content-wrap.shifted {
+        margin-left: 0;
+      }
+      .menu-toggle.shifted {
+        left: 1rem;
+      }
+    }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+  <!-- Menu Toggle Button -->
+  <button class="menu-toggle" id="menuToggle">
+    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </button>
+
+  <!-- Overlay -->
+  <div class="overlay" id="overlay"></div>
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="flex items-center gap-3 mb-6">
+      <div class="w-10 h-10 bg-indigo-600 rounded-md flex items-center justify-center text-white font-bold">NV</div>
+      <div>
+        <div class="text-sm font-bold">Nhật - Visa</div>
+        <div class="text-xs muted">Cẩm nang hồ sơ Đường xa</div>
+      </div>
+    </div>
+    <nav class="space-y-2 text-sm">
+      <a href="#personal-section" class="block py-2 px-3 rounded hover:bg-indigo-50 transition-colors">1. Hồ sơ cá nhân</a>
+      <a href="#financial-section" class="block py-2 px-3 rounded hover:bg-indigo-50 transition-colors">2. Hồ sơ tài chính</a>
+      <a href="#employment-section" class="block py-2 px-3 rounded hover:bg-indigo-50 transition-colors">3. Hồ sơ công việc</a>
+      <a href="#travel-section" class="block py-2 px-3 rounded hover:bg-indigo-50 transition-colors">4. Hồ sơ chuyến đi</a>
+      <a href="#notes-section" class="block py-2 px-3 rounded hover:bg-indigo-50 transition-colors">5. Lưu ý & bổ sung</a>
+      <a href="#special-section" class="block py-2 px-3 rounded hover:bg-indigo-50 transition-colors">6. Trường hợp đặc biệt</a>
+      <a href="#appendix" class="block py-2 px-3 rounded hover:bg-indigo-50 transition-colors">7. Hợp pháp hóa & sao y</a>
+      <div class="border-t mt-4 pt-4 text-xs muted">Phiên bản 2025 · Nhật - Visa</div>
+    </nav>
+  </aside>
+
+  <main class="content-wrap" id="contentWrap">
+    <div class="container mx-auto px-4" style="max-width: 1200px;">
+      <header class="flex items-start justify-between mb-8 mt-12">
+        <div>
+          <h1 class="text-3xl font-bold text-indigo-700">Nhật - Visa</h1>
+          <p class="muted mt-2">Cẩm nang tra cứu hồ sơ Visa Đường xa — tra cứu theo nhóm và theo trường hợp chi tiết.</p>
+        </div>
+      </header>
+
+      <!-- PERSONAL SECTION -->
+      <section id="personal-section" class="mb-8">
+        <div class="flex items-center justify-between mb-4 flex-wrap gap-3">
+          <h2 class="text-2xl font-semibold">1. Hồ sơ cá nhân</h2>
+          <div class="flex gap-2 items-center flex-wrap">
+            <input id="personalSearch" class="border rounded p-2 text-sm" placeholder="Tìm trong hồ sơ cá nhân..." />
+            <select id="personalFilter" class="border rounded p-2 text-sm">
+              <option value="all">— Tất cả —</option>
+              <option value="doc-than">Độc thân</option>
+              <option value="ket-hon">Kết hôn</option>
+              <option value="ly-hon">Ly hôn</option>
+              <option value="goa">Góa</option>
+              <option value="con-nuoi">Con nuôi</option>
+              <option value="doi-ten">Đổi tên</option>
+              <option value="tre-em">Trẻ em</option>
+            </select>
+            <button data-group="personal" class="show-all-btn px-3 py-2 bg-indigo-600 text-white rounded text-sm hover:bg-indigo-700 transition-colors">Hiện tất cả</button>
+          </div>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-4">
+          <article class="card fade" data-group="personal" data-item="doc-than">
+            <h3 class="font-semibold text-indigo-700 mb-2">Độc thân</h3>
+            <ul class="list-disc ml-6 muted mt-2 space-y-1">
+              <li>CCCD / CMND, Giấy xác nhận cư trú (CT07/CT08).</li>
+              <li>Hộ chiếu còn hạn ≥6 tháng; Khai sinh nếu cần.</li>
+              <li>02 tấm Hình 3.5 x 4.5.</li>
+            </ul>
+            <p class="muted mt-3 text-sm">Lưu ý: Tránh để tài chính phụ thuộc hoàn toàn vào người khác.</p>
+          </article>
+
+          <article class="card fade" data-group="personal" data-item="ket-hon">
+            <h3 class="font-semibold text-indigo-700 mb-2">Kết hôn</h3>
+            <ul class="list-disc ml-6 muted mt-2 space-y-1">
+              <li>Giấy đăng ký kết hôn (công chứng);
+              <li>CCCD / CMND, Giấy xác nhận cư trú (CT07/CT08).</li>
+              <li>Hộ chiếu còn hạn ≥6 tháng; Khai sinh nếu có.</li>
+              <li>02 tấm Hình 3.5 x 4.5.</li>
+              <li>Nếu kết hôn ở nước ngoài: bản dịch công chứng + hợp pháp hóa nếu cần.</li>
+              <li>Hồ sơ tài chính hai vợ chồng nếu đi cùng hoặc bảo lãnh lẫn nhau.</li>
+            </ul>
+            <p class="muted mt-3 text-sm">Lưu ý: Nên xin trích lục mới nếu giấy kết hôn đã lâu.</p>
+          </article>
+
+          <article class="card fade" data-group="personal" data-item="ly-hon">
+            <h3 class="font-semibold text-indigo-700 mb-2">Ly hôn</h3>
+            <ul class="list-disc ml-6 muted mt-2 space-y-1">
+              <li>Quyết định ly hôn / bản án (bản sao công chứng); Khai sinh con nếu có.</li>
+              <li>CCCD / CMND, Giấy xác nhận cư trú (CT07/CT08).</li>
+              <li>Hộ chiếu còn hạn ≥6 tháng.</li>
+              <li>02 tấm Hình 3.5 x 4.5.</li>
+            </ul>
+            <p class="muted mt-3 text-sm">Lưu ý: Nếu có con nhỏ, cần chứng minh quyền nuôi và ràng buộc gia đình.</p>
+          </article>
+
+          <article class="card fade" data-group="personal" data-item="goa">
+            <h3 class="font-semibold text-indigo-700 mb-2">Góa</h3>
+            <ul class="list-disc ml-6 muted mt-2 space-y-1">
+              <li>Giấy chứng tử của vợ/chồng (bản công chứng), khai sinh con (nếu có).</li>
+              <li>CCCD / CMND, Giấy xác nhận cư trú (CT07/CT08).</li>
+              <li>Hộ chiếu còn hạn ≥6 tháng.</li>
+              <li>02 tấm Hình 3.5 x 4.5.</li>
+            </ul>
+          </article>
+
+          <article class="card fade" data-group="personal" data-item="con-nuoi">
+            <h3 class="font-semibold text-indigo-700 mb-2">Con nuôi / Giám hộ</h3>
+            <ul class="list-disc ml-6 muted mt-2 space-y-1">
+              <li>Quyết định nhận con nuôi, giấy tờ giám hộ, khai sinh cập nhật.</li>
+            </ul>
+          </article>
+
+          <article class="card fade" data-group="personal" data-item="doi-ten">
+            <h3 class="font-semibold text-indigo-700 mb-2">Đổi tên</h3>
+            <ul class="list-disc ml-6 muted mt-2 space-y-1">
+              <li>Quyết định đổi tên, giấy tờ chứng minh tên cũ — tên mới, bản dịch công chứng nếu cần.</li>
+            </ul>
+          </article>
+
+          <article class="card fade" data-group="personal" data-item="tre-em">
+            <h3 class="font-semibold text-indigo-700 mb-2">Trẻ em đi cùng / đi một mình</h3>
+            <ul class="list-disc ml-6 muted mt-2 space-y-1">
+              <li>Giấy khai sinh, giấy đồng ý của cả cha mẹ (công chứng) + CCCD của cha mẹ, nếu ủy quyền cho người thứ 3 phải có đầy đủ thông tin người được ủy quyền.</li>
+            </ul>
+            <p class="muted mt-3 text-sm">Lưu ý: Giấy đồng ý phải được ký công chứng bởi cả cha và mẹ (trừ trường hợp có quy định khác).</p>
+          </article>
+        </div>
+      </section>
+
+      <!-- FINANCIAL SECTION -->
+      <section id="financial-section" class="mb-8">
+        <div class="flex items-center justify-between mb-4 flex-wrap gap-3">
+          <h2 class="text-2xl font-semibold">2. Hồ sơ tài chính</h2>
+          <div class="flex gap-2 items-center flex-wrap">
+            <input id="financialSearch" class="border rounded p-2 text-sm" placeholder="Tìm trong hồ sơ tài chính..." />
+            <select id="financialFilter" class="border rounded p-2 text-sm">
+              <option value="all">— Tất cả —</option>
+              <option value="dang-lam">Đang đi làm</option>
+              <option value="chu-dn">Chủ doanh nghiệp</option>
+              <option value="freelancer">Freelancer</option>
+              <option value="noi-tro">Nội trợ</option>
+              <option value="bao-lanh">Người được bảo lãnh</option>
+            </select>
+            <button data-group="financial" class="show-all-btn px-3 py-2 bg-indigo-600 text-white rounded text-sm hover:bg-indigo-700 transition-colors">Hiện tất cả</button>
+          </div>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-4">
+          <article class="card fade" data-group="financial" data-item="dang-lam">
+            <h3 class="font-semibold text-indigo-700 mb-2">Người đi làm (lương)</h3>
+            <ul class="list-disc ml-6 muted mt-2 space-y-1">
+              <li>Sao kê ngân hàng 3—6 tháng (tài khoản nhận lương).</li>
+              <li>Xác nhận lương 3-6 tháng (nếu nhận lương tiền mặt).</li>
+              <li>Sổ tiết kiệm nên mở ít nhất trước 6 tháng đến 1 năm trước khi nộp hồ sơ.</li>
+            </ul>
+          </article>
+
+          <article class="card fade" data-group="financial" data-item="chu-dn">
+            <h3 class="font-semibold text-indigo-700 mb-2">Chủ doanh nghiệp / hộ kinh doanh</h3>
+            <ul class="list-disc ml-6 muted mt-2 space-y-1">
+              <li>Sao kê công ty (nếu đứng tên 1 mình kinh doanh).</li>
+               <li>Nếu không có tài khoản công ty =>Sao kê ngân hàng 3—6 tháng (cá nhân), thể hiện lịch sử thu nhập, chi tiêu.</li>
+            </ul>
+          </article>
+
+          <article class="card fade" data-group="financial" data-item="freelancer">
+            <h3 class="font-semibold text-indigo-700 mb-2">Freelancer / Làm tự do</h3>
+            <ul class="list-disc ml-6 muted mt-2 space-y-1">
+              <li>Hợp đồng dịch vụ, sao kê tài khoản nhận thanh toán, hóa đơn, chứng minh khách hàng.</li>
+              <li>Chuẩn bị thư giải trình nguồn thu nhập.</li>
+            </ul>
+          </article>
+
+          <article class="card fade" data-group="financial" data-item="noi-tro">
+            <h3 class="font-semibold text-indigo-700 mb-2">Nội trợ</h3>
+            <ul class="list-disc ml-6 muted mt-2 space-y-1">
+              <li>Thư bảo lãnh tài chính của người thân + sao kê, sổ tiết kiệm người bảo lãnh.</li>
+            </ul>
+          </article>
+
+          <article class="card fade" data-group="financial" data-item="bao-lanh">
+            <h3 class="font-semibold text-indigo-700 mb-2">Người được bảo lãnh</h3>
+            <ul class="list-disc ml-6 muted mt-2 space-y-1">
+              <li>Thư bảo lãnh, CMND/hộ chiếu người bảo lãnh, sao kê, giấy tờ chứng minh quan hệ.</li>
+              <li>Lưu ý: Nên nộp kèm hồ sơ tài chính cá nhân.</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <!-- EMPLOYMENT SECTION -->
+      <section id="employment-section" class="mb-8">
+        <div class="flex items-center justify-between mb-4 flex-wrap gap-3">
+          <h2 class="text-2xl font-semibold">3. Hồ sơ công việc</h2>
+          <div class="flex gap-2 items-center flex-wrap">
+            <input id="employmentSearch" class="border rounded p-2 text-sm" placeholder="Tìm trong hồ sơ công việc..." />
+            <select id="employmentFilter" class="border rounded p-2 text-sm">
+              <option value="all">— Tất cả —</option>
+              <option value="nhan-vien">Nhân viên</option>
+              <option value="chu-dn">Chủ doanh nghiệp</option>
+              <option value="can-bo">Cán bộ</option>
+              <option value="sinh-vien">Sinh viên</option>
+              <option value="nghi-huu">Nghỉ hưu</option>
+            </select>
+            <button data-group="employment" class="show-all-btn px-3 py-2 bg-indigo-600 text-white rounded text-sm hover:bg-indigo-700 transition-colors">Hiện tất cả</button>
+          </div>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-4">
+          <article class="card fade" data-group="employment" data-item="nhan-vien">
+            <h3 class="font-semibold text-indigo-700 mb-2">Nhân viên (HĐLĐ)</h3>
+            <ul class="list-disc ml-6 muted mt-2 space-y-1">
+              <li>Hợp đồng lao động.</li>
+              <li>Xác nhận việc làm có thông tin chức vụ và mức lương.</li>
+              <li>Bảng lương 3 tháng, một số nơi yêu cầu VSSID.</li>
+              <li>Thư xác nhận nghỉ phép có mộc công ty.</li>
+              <li>Nếu công ty nhỏ: thư xác nhận tay có chữ ký giám đốc + con dấu.</li>
+            </ul>
+          </article>
+
+          <article class="card fade" data-group="employment" data-item="chu-dn">
+            <h3 class="font-semibold text-indigo-700 mb-2">Chủ doanh nghiệp</h3>
+            <ul class="list-disc ml-6 muted mt-2 space-y-1">
+              <li>Giấy phép kinh doanh.</li>
+              <li>Sao kê công ty 3-6 tháng.</li>
+              <li>Biên lai thuế/báo cáo thuế 3 tháng gần nhất.</li>
+              <li>Hợp đồng mua bán, ảnh cơ sở (nếu có).</li>
+            </ul>
+          </article>
+
+          <article class="card fade" data-group="employment" data-item="can-bo">
+            <h3 class="font-semibold text-indigo-700 mb-2">Cán bộ, công chức</h3>
+            <ul class="list-disc ml-6 muted mt-2 space-y-1">
+              <li>Quyết định bổ nhiệm có đóng dấu cơ quan.</li>
+              <li>Giấy xác nhận công tác có đóng dấu cơ quan.</li>
+              <li>Giấy xác nhận nghỉ phép có đóng dấu cơ quan.</li>
+              <li>Bảng lương 3 tháng, một số nơi yêu cầu VSSID.</li>
+            </ul>
+          </article>
+
+          <article class="card fade" data-group="employment" data-item="sinh-vien">
+            <h3 class="font-semibold text-indigo-700 mb-2">Sinh viên</h3>
+            <ul class="list-disc ml-6 muted mt-2 space-y-1">
+              <li>Giấy xác nhận sinh viên.</li>
+              <li>Giấy xin nghỉ học.</li>
+              <li>Thư bảo lãnh tài chính của cha mẹ.</li>
+            </ul>
+          </article>
+
+          <article class="card fade" data-group="employment" data-item="nghi-huu">
+            <h3 class="font-semibold text-indigo-700 mb-2">Người nghỉ hưu</h3>
+            <ul class="list-disc ml-6 muted mt-2 space-y-1">
+              <li>Sổ hưu, chứng nhận nhận hưu 1 lần.</li>
+              <li>Quyết định nghỉ hưu.</li>
+              <li>Sao kê nhận lương hưu 3 tháng gần nhất.</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <!-- TRAVEL SECTION -->
+      <section id="travel-section" class="mb-8">
+        <div class="flex items-center justify-between mb-4 flex-wrap gap-3">
+          <h2 class="text-2xl font-semibold">4. Hồ sơ chuyến đi</h2>
+          <div class="flex gap-2 items-center flex-wrap">
+            <input id="travelSearch" class="border rounded p-2 text-sm" placeholder="Tìm trong hồ sơ chuyến đi..." />
+            <select id="travelFilter" class="border rounded p-2 text-sm">
+              <option value="all">— Tất cả —</option>
+              <option value="dulich">Du lịch</option>
+              <option value="congtac">Công tác / Hội nghị</option>
+              <option value="incentive">Incentive trip</option>
+              <option value="tham-than">Thăm thân</option>
+            </select>
+            <button data-group="travel" class="show-all-btn px-3 py-2 bg-indigo-600 text-white rounded text-sm hover:bg-indigo-700 transition-colors">Hiện tất cả</button>
+          </div>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-4">
+          <article class="card fade" data-group="travel" data-item="dulich">
+            <h3 class="font-semibold text-indigo-700 mb-2">Du lịch (cá nhân / tour)</h3>
+            <ul class="list-disc ml-6 muted mt-2 space-y-1">
+              <li>Vé máy bay khứ hồi / booking, đặt phòng khách sạn, lịch trình chi tiết.</li>
+              <li>Bảo hiểm du lịch (Schengen yêu cầu ≥30.000 EUR).</li>
+            </ul>
+          </article>
+
+          <article class="card fade" data-group="travel" data-item="congtac">
+            <h3 class="font-semibold text-indigo-700 mb-2">Công tác / Hội nghị</h3>
+            <ul class="list-disc ml-6 muted mt-2 space-y-1">
+              <li>Thư mời, lịch trình hội nghị, có đầy đủ thông tin người mời, lý do và mục đích cụ thể.</li>
+              <li>Chứng minh mối quan hệ hợp tác (hợp đồng đại lý/cộng tác, chứng từ mua bán, biên lai, ...).</li>
+              <li>Giấy nghỉ phép phải được thay thế bằng quyết định cử đi công tác (trừ vài trường hợp đặc biệt).</li>
+              <li>Bảo hiểm du lịch (Schengen yêu cầu ≥30.000 EUR).</li>
+            </ul>
+          </article>
+
+          <article class="card fade" data-group="travel" data-item="incentive">
+            <h3 class="font-semibold text-indigo-700 mb-2">Incentive trip</h3>
+            <ul class="list-disc ml-6 muted mt-2 space-y-1">
+              <li>Thư mời/ quyết định thưởng của công ty, danh sách đoàn có dấu.</li>
+              <li>Công văn xác nhận công ty chi trả chi phí (có tên danh sách người tham dự).</li>
+              <li>Bảo hiểm du lịch (Schengen yêu cầu ≥30.000 EUR).</li>
+            </ul>
+          </article>
+
+          <article class="card fade" data-group="travel" data-item="tham-than">
+            <h3 class="font-semibold text-indigo-700 mb-2">Thăm thân</h3>
+            <ul class="list-disc ml-6 muted mt-2 space-y-1">
+              <li>Thư mời của người thân, bản sao hộ chiếu/giấy tờ cư trú người mời, giấy tờ chứng minh quan hệ.</li>
+              <li>Bảo hiểm du lịch (Schengen yêu cầu ≥30.000 EUR).</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <!-- NOTES SECTION -->
+      <section id="notes-section" class="mb-8">
+        <div class="flex items-center justify-between mb-4 flex-wrap gap-3">
+          <h2 class="text-2xl font-semibold">5. Lưu ý & Hồ sơ bổ sung</h2>
+          <div class="flex gap-2 items-center flex-wrap">
+            <input id="notesSearch" class="border rounded p-2 text-sm" placeholder="Tìm lưu ý hoặc trường hợp bổ sung..." />
+            <select id="notesFilter" class="border rounded p-2 text-sm">
+              <option value="all">— Tất cả —</option>
+              <option value="missing-docs">Thiếu giấy tờ phổ biến</option>
+              <option value="visa-refused">Đã bị từ chối</option>
+              <option value="relative-abroad">Có người thân ở nước ngoài</option>
+            </select>
+            <button data-group="notes" class="show-all-btn px-3 py-2 bg-indigo-600 text-white rounded text-sm hover:bg-indigo-700 transition-colors">Hiện tất cả</button>
+          </div>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-4">
+          <article class="card fade" data-group="notes" data-item="missing-docs">
+            <h3 class="font-semibold text-indigo-700 mb-2">Thiếu giấy tờ phổ biến</h3>
+            <ul class="list-disc ml-6 muted mt-2 space-y-1">
+              <li>Có thể thay thế hộ khẩu bằng CT07/CT08 - một vài nước yêu cầu bắt buộc CT07, (một vài trường hợp có thể sử dụng hợp đồng thuê nhà + hóa đơn điện nước + kèm giải trình cụ thể để thay thế).</li>
+              <li>Không có sổ tiết kiệm: thư bảo lãnh + Xác nhận số dư, sao kê ngân hàng của người bảo lãnh.</li>
+            </ul>
+          </article>
+
+          <article class="card fade" data-group="notes" data-item="visa-refused">
+            <h3 class="font-semibold text-indigo-700 mb-2">Đã bị từ chối visa</h3>
+            <ul class="list-disc ml-6 muted mt-2 space-y-1">
+              <li>Chuẩn bị thư giải trình, bổ sung giấy tờ còn thiếu, trung thực khi khai hồ sơ.</li>
+            </ul>
+          </article>
+
+          <article class="card fade" data-group="notes" data-item="relative-abroad">
+            <h3 class="font-semibold text-indigo-700 mb-2">Có người thân ở nước đến</h3>
+            <ul class="list-disc ml-6 muted mt-2 space-y-1">
+              <li>Thư mời + chứng minh quan hệ; chứng minh ràng buộc tại VN (việc làm, tài sản).</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <!-- SPECIAL SECTION -->
+      <section id="special-section" class="mb-8">
+        <div class="flex items-center justify-between mb-4 flex-wrap gap-3">
+          <h2 class="text-2xl font-semibold">6. Các trường hợp đặc biệt</h2>
+          <div class="flex gap-2 items-center flex-wrap">
+            <input id="specialSearch" class="border rounded p-2 text-sm" placeholder="Tìm trường hợp đặc biệt..." />
+            <select id="specialFilter" class="border rounded p-2 text-sm">
+              <option value="all">— Tất cả —</option>
+              <option value="dn-new">Doanh nghiệp mới</option>
+              <option value="freelancer-weak">Freelancer khó chứng minh</option>
+              <option value="has-visa-old">Có visa cũ</option>
+              <option value="name-mismatch">Trùng tên / Đổi tên</option>
+            </select>
+            <button data-group="special" class="show-all-btn px-3 py-2 bg-indigo-600 text-white rounded text-sm hover:bg-indigo-700 transition-colors">Hiện tất cả</button>
+          </div>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-4">
+          <article class="card fade" data-group="special" data-item="dn-new">
+            <h3 class="font-semibold text-indigo-700 mb-2">Doanh nghiệp mới đăng ký, chưa có kê khai thuế, đóng thuế</h3>
+            <ul class="list-disc ml-6 muted mt-2 space-y-1">
+              <li>DKKD < 6 tháng: chứng nhận miễn thuế (nếu có), hợp đồng đầu vào/ra, hóa đơn, ảnh cơ sở, sao kê cá nhân.</li>
+            </ul>
+          </article>
+
+          <article class="card fade" data-group="special" data-item="freelancer-weak">
+            <h3 class="font-semibold text-indigo-700 mb-2">Freelancer thu nhập khó chứng minh</h3>
+            <ul class="list-disc ml-6 muted mt-2 space-y-1">
+              <li>Rà soát hợp đồng, sao kê, email khách hàng, thư giải trình chi tiết.</li>
+            </ul>
+          </article>
+
+          <article class="card fade" data-group="special" data-item="has-visa-old">
+            <h3 class="font-semibold text-indigo-700 mb-2">Có visa cũ / hộ chiếu cũ</h3>
+            <ul class="list-disc ml-6 muted mt-2 space-y-1">
+              <li>Đính kèm scan visa cũ, dấu xuất nhập cảnh. Nếu mất hộ chiếu cũ: giải trình và chứng minh nếu có.</li>
+            </ul>
+          </article>
+
+          <article class="card fade" data-group="special" data-item="name-mismatch">
+            <h3 class="font-semibold text-indigo-700 mb-2">Trùng tên / Đổi tên</h3>
+            <ul class="list-disc ml-6 muted mt-2 space-y-1">
+              <li>Quyết định đổi tên, giấy tờ chứng minh tên cũ — tên mới, bản dịch công chứng.</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <!-- APPENDIX SECTION -->
+      <section id="appendix" class="mb-8">
+        <div class="flex items-center justify-between mb-4 flex-wrap gap-3">
+          <h2 class="text-2xl font-semibold">7. Phụ lục: Hợp pháp hóa lãnh sự & sao y</h2>
+          <div class="flex gap-2 items-center flex-wrap">
+            <input id="appendixSearch" class="border rounded p-2 text-sm" placeholder="Tìm trong phụ lục..." />
+            <button data-group="appendix" class="show-all-btn px-3 py-2 bg-indigo-600 text-white rounded text-sm hover:bg-indigo-700 transition-colors">Hiện tất cả</button>
+          </div>
+        </div>
+
+        <div class="card fade" data-group="appendix">
+          <h3 class="font-semibold text-indigo-700 mb-3">Hợp pháp hóa lãnh sự là gì?</h3>
+          <p class="muted">Là thủ tục xác nhận con dấu, chữ ký trên giấy tờ Việt Nam để được công nhận ở nước ngoài. Thường áp dụng cho giấy khai sinh, kết hôn, bằng cấp, lý lịch tư pháp...</p>
+
+          <h4 class="font-semibold mt-4 mb-2">Quy trình thực hiện</h4>
+          <ol class="list-decimal ml-6 muted space-y-2">
+            <li>Công chứng / sao y bản gốc tại Phòng công chứng hoặc UBND.</li>
+            <li>Dịch thuật công chứng nếu cần.</li>
+            <li>Nộp tại Cục Lãnh sự — Bộ Ngoại giao hoặc Sở Ngoại vụ TP.HCM để đóng dấu hợp pháp hóa.</li>
+            <li>Nếu LSQ yêu cầu: nộp sang Đại sứ quán/Lãnh sự quán để chứng nhận.</li>
+          </ol>
+
+          <h4 class="font-semibold mt-4 mb-2">Thời gian & lưu ý</h4>
+          <p class="muted">Thời gian: 5-15 ngày làm việc tùy nước. Sao y phải có dấu đỏ; nhiều LSQ yêu cầu giấy tờ không quá 3—6 tháng gần nhất.</p>
+        </div>
+      </section>
+
+      <!-- FOOTER -->
+      <footer class="text-center text-sm muted py-8 border-t mt-8">
+        © 2025 Nhật - Visa · Cẩm nang hồ sơ. Tất cả thông tin mang tính tham khảo, cần kiểm tra lại với chuyên viên Visa với từng nước để biết yêu cầu cụ thể chính xác cho từng trường hợp..
+      </footer>
+    </div>
+  </main>
+
+  <script>
+    // Helpers
+    function q(selector, parent=document) { return parent.querySelector(selector) }
+    function qa(selector, parent=document) { return Array.from(parent.querySelectorAll(selector)) }
+
+    // Menu toggle functionality
+    const menuToggle = document.getElementById('menuToggle');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    const contentWrap = document.getElementById('contentWrap');
+
+    function toggleMenu() {
+      sidebar.classList.toggle('open');
+      overlay.classList.toggle('active');
+      contentWrap.classList.toggle('shifted');
+      menuToggle.classList.toggle('shifted');
+    }
+
+    menuToggle.addEventListener('click', toggleMenu);
+    overlay.addEventListener('click', toggleMenu);
+
+    // Close menu when clicking on nav links
+    qa('aside a').forEach(link => {
+      link.addEventListener('click', () => {
+        if (window.innerWidth <= 768) {
+          toggleMenu();
+        }
+      });
+    });
+
+    // Show-all buttons per group
+    qa('.show-all-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const group = btn.dataset.group;
+        qa('[data-group]').forEach(el => {
+          if (el.dataset.group === group) el.classList.remove('hidden');
+        });
+      });
+    });
+
+    // Individual group filters and searches
+    const groups = ['personal','financial','employment','travel','notes','special','appendix'];
+    groups.forEach(g => {
+      const search = q(`#${g}Search`);
+      const filter = q(`#${g}Filter`);
+      // attach if exists
+      if (search) {
+        search.addEventListener('input', () => filterGroup(g));
+      }
+      if (filter) {
+        filter.addEventListener('change', () => filterGroup(g));
+      }
+    });
+
+    // For groups that use different ids, map them
+    const groupMap = {
+      personal: {search:'#personalSearch', filter:'#personalFilter'},
+      financial: {search:'#financialSearch', filter:'#financialFilter'},
+      employment: {search:'#employmentSearch', filter:'#employmentFilter'},
+      travel: {search:'#travelSearch', filter:'#travelFilter'},
+      notes: {search:'#notesSearch', filter:'#notesFilter'},
+      special: {search:'#specialSearch', filter:'#specialFilter'},
+      appendix: {search:'#appendixSearch', filter:null},
+    };
+
+    function filterGroup(group) {
+      const map = groupMap[group];
+      const searchEl = map && map.search ? q(map.search) : null;
+      const filterEl = map && map.filter ? q(map.filter) : null;
+      const qText = searchEl ? searchEl.value.trim().toLowerCase() : '';
+      const filterVal = filterEl ? filterEl.value : 'all';
+
+      qa(`[data-group="${group}"]`).forEach(block => {
+        let text = block.innerText.toLowerCase();
+        let matchesSearch = qText === '' || text.includes(qText);
+        let matchesFilter = (filterVal === 'all') || (block.dataset.item === filterVal);
+        block.classList.toggle('hidden', !(matchesSearch && matchesFilter));
+      });
+    }
+
+    // Ensure all content expanded / visible by default
+    qa('.card[data-group]').forEach(el => el.classList.remove('hidden'));
+
+    // Replace feather icons if used
+    if (window.feather) feather.replace();
+
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      });
+    });
+  </script>
+</body>
+</html>
