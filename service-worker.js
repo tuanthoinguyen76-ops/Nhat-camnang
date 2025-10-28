@@ -2,8 +2,8 @@ const CACHE_NAME = 'nhat-visa-cache-v1';
 const PRECACHE_URLS = [
   'index.html',
   'manifest.json',
-  'icons/icon-192.svg',
-  'icons/icon-512.svg'
+  'icons/icon-192x192.png',
+  'icons/icon-512x512.png'
   // nếu bạn có file CSS/JS/ảnh tĩnh khác, thêm đường dẫn tại đây
 ];
 
