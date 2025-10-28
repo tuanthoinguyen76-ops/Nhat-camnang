@@ -43,7 +43,7 @@ self.addEventListener('fetch', (event) => {
         return resp;
       }).catch(() => {
         // offline fallback: try to return cached start page
-        return caches.match('v2.1.html');
+        return caches.match('index.html');
       });
     })
   );
