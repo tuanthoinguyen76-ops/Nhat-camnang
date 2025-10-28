@@ -1,12 +1,10 @@
 const CACHE_NAME = 'nhat-visa-cache-v1';
 const PRECACHE_URLS = [
-  'index.html',
-  'manifest.json',
-  'icons/icon-192x192.png',
-  'icons/icon-512x512.png'
-  // nếu bạn có file CSS/JS/ảnh tĩnh khác, thêm đường dẫn tại đây
-];
-
+  './index.html',
+  './manifest.json',
+  './icons/icon-192x192.png',
+  './icons/icon-512x512.png'
+  
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
@@ -43,7 +41,7 @@ self.addEventListener('fetch', (event) => {
         return resp;
       }).catch(() => {
         // offline fallback: try to return cached start page
-        return caches.match('index.html');
+        return caches.match('./index.html');
       });
     })
   );
