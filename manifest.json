@@ -2,7 +2,7 @@
   "name": "Nhat - Camnang Visa",
   "short_name": "NhatVisa",
   "description": "Cẩm nang hồ sơ visa — tra cứu theo quốc gia, chạy offline.",
-  "start_url": "v2.1.html",
+  "start_url": "index.html",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#ffffff",
