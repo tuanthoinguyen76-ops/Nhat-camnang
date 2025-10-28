@@ -4,8 +4,10 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Nhật - Visa · Cẩm nang hồ sơ Visa quốc tế</title>
-  <script src="https://tailwindcss.com/docs/installation"></script>
-
+    <link rel="stylesheet" href="dist/tailwind.css">
+  <link rel="preload" href="./tailwind.css" as="style">
+  <link rel="preload" href="./manifest.json" as="fetch" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
   <style>
     :root{
       --indigo-600: #4f46e5;
@@ -280,6 +282,16 @@
       }
     }
   </style>
+  <link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#4f46e5">
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./service-worker.js')
+        .then(reg => console.log('✅ Service Worker registered:', reg.scope))
+        .catch(err => console.error('❌ SW registration failed:', err));
+    });
+  }
 </head>
 <body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
   
@@ -1707,9 +1719,8 @@
 </div>
   </div>
   <footer class="text-center py-8 text-gray-600">
-    <p>© 2025 Nhật - Visa · Cẩm nang hồ sơ. </p>
-    <p>Tất cả thông tin mang tính tham khảo, cần kiểm tra lại với chuyên viên Visa với từng nước để biết yêu cầu cụ thể chính xác cho từng trường hợp.</p>
-    <p class="text-sm mt-2">Kiểm tra lại yêu cầu từ Đại sứ quán/Lãnh sự quán trước khi nộp hồ sơ</p>
+    <p>© 2025 Nhật - Visa · Cẩm nang hồ sơ. Tất cả thông tin mang tính tham khảo, cần kiểm tra lại với chuyên viên Visa với từng nước để biết yêu cầu cụ thể chính xác cho từng trường hợp.</p>
+    <p class="text-sm mt-2">Kiểm tra yêu cầu Đại sứ quán/Lãnh sự quán trước khi nộp hồ sơ</p>
   </footer>
   <script>
     // Menu Toggle
@@ -1854,10 +1865,13 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 });
   </script>
 <script>
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./service-worker.js')
-  .then(() => console.log('✅ Service Worker registered successfully'))
-  .catch(err => console.error('❌ Service Worker registration failed:', err));
+if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker
+        .register("./service-worker.js")
+        .then(reg => console.log("[PWA] Service Worker registered:", reg))
+        .catch(err => console.error("[PWA] SW registration failed:", err));
+    });
 }
 
 let deferredPrompt;
@@ -1886,7 +1900,7 @@ function showInstallButton() {
   const btn = document.createElement('button');
   btn.id = 'pwa-install-btn';
   btn.innerHTML = '📱 Cài ứng dụng';
-  btn.setAttribute('aria-label','Install Nhat-CamnangVisa-2.1');
+  btn.setAttribute('aria-label','Install Nhat-CamnangVisa');
   btn.style.position = 'fixed';
   btn.style.right = '14px';
   btn.style.bottom = '20px';
