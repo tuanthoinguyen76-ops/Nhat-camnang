@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Cẩm nang hồ sơ Visa quốc tế</title>
+  <title>Nhật - Visa · Cẩm nang hồ sơ Visa quốc tế</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     :root{
@@ -297,17 +297,17 @@
   <!-- Sidebar -->
   <aside class="sidebar" id="sidebar">
     <div class="flex items-center gap-3 mb-6">
-      <div class="w-10 h-10 bg-indigo-600 rounded-md flex items-center justify-center text-white font-bold">VG</div>
+      <div class="w-10 h-10 bg-indigo-600 rounded-md flex items-center justify-center text-white font-bold">NV</div>
       <div>
         <div class="text-sm font-bold">Visa Guide</div>
-        <div class="text-xs muted">Cẩm nang visa</div>
+        <div class="text-xs muted">Cẩm nang Visa quốc tế</div>
       </div>
     </div>
     <nav class="space-y-2 text-sm">
       <a href="#home" class="block py-2 px-3 rounded hover:bg-indigo-50 transition-colors" onclick="closeMenu()">🏠 Trang chủ</a>
       <a href="#" class="block py-2 px-3 rounded hover:bg-indigo-50 transition-colors" onclick="openModal('france'); closeMenu();">🇫🇷 Pháp</a>
       <a href="#" class="block py-2 px-3 rounded hover:bg-indigo-50 transition-colors" onclick="openModal('italy'); closeMenu();">🇮🇹 Ý</a>
-      <div class="border-t mt-4 pt-4 text-xs muted">Phiên bản 2025</div>
+      <div class="border-t mt-4 pt-4 text-xs muted">@Nhật - Phiên bản 2025</div>
     </nav>
   </aside>
 
@@ -1706,7 +1706,7 @@
 </div>
   </div>
   <footer class="text-center py-8 text-gray-600">
-    <p>© 2025 Cẩm nang hồ sơ Visa quốc tế</p>
+    <p>© 2025 Nhật - Visa · Cẩm nang hồ sơ. Tất cả thông tin mang tính tham khảo, cần kiểm tra lại với chuyên viên Visa với từng nước để biết yêu cầu cụ thể chính xác cho từng trường hợp.</p>
     <p class="text-sm mt-2">Kiểm tra yêu cầu Đại sứ quán/Lãnh sự quán trước khi nộp hồ sơ</p>
   </footer>
   <script>
@@ -1851,23 +1851,77 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
   });
 });
   </script>
-</body>
-  <script>
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('service-worker.js').then(function(reg){
+    console.log('Service Worker registered', reg);
+  }).catch(function(err){ console.warn('SW registration failed', err); });
+}
+
 let deferredPrompt;
 window.addEventListener('beforeinstallprompt', (e) => {
+  console.log('beforeinstallprompt fired');
   e.preventDefault();
   deferredPrompt = e;
-  const btn = document.createElement('button');
-  btn.textContent = '📱 Cài ứng dụng Nhat-CamnangVisa';
-  btn.style = 'position:fixed;bottom:20px;right:20px;padding:10px 16px;background:#4f46e5;color:white;border:none;border-radius:8px;';
-  document.body.appendChild(btn);
-  btn.addEventListener('click', async () => {
-    btn.remove();
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    console.log(`User response: ${outcome}`);
-    deferredPrompt = null;
-  });
+  showInstallButton();
+  setTimeout(async () => {
+    if (deferredPrompt) {
+      try {
+        deferredPrompt.prompt();
+        const choice = await deferredPrompt.userChoice;
+        console.log('User choice', choice);
+        deferredPrompt = null;
+      } catch (err) {
+        console.log('Prompt failed or dismissed', err);
+      }
+    }
+  }, 1500);
 });
+
+function showInstallButton() {
+  const existing = document.getElementById('pwa-install-btn');
+  if (existing) return;
+  const btn = document.createElement('button');
+  btn.id = 'pwa-install-btn';
+  btn.innerHTML = '📱 Cài ứng dụng';
+  btn.setAttribute('aria-label','Install Nhat-CamnangVisa');
+  btn.style.position = 'fixed';
+  btn.style.right = '14px';
+  btn.style.bottom = '20px';
+  btn.style.padding = '10px 14px';
+  btn.style.borderRadius = '12px';
+  btn.style.border = 'none';
+  btn.style.boxShadow = '0 6px 18px rgba(15,23,42,0.12)';
+  btn.style.background = '#4f46e5';
+  btn.style.color = 'white';
+  btn.style.fontSize = '15px';
+  btn.style.zIndex = 9999;
+  btn.style.cursor = 'pointer';
+  btn.addEventListener('click', async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const choice = await deferredPrompt.userChoice;
+      console.log('User response to the prompt:', choice);
+      deferredPrompt = null;
+      btn.remove();
+    } else {
+      alert('Mở menu trình duyệt và chọn "Add to Home Screen" để cài đặt.');
+    }
+  });
+  document.body.appendChild(btn);
+}
+
+window.addEventListener('appinstalled', (evt) => {
+  console.log('PWA was installed', evt);
+  const btn = document.getElementById('pwa-install-btn');
+  if (btn) btn.remove();
+});
+
+setTimeout(() => {
+  if (!document.getElementById('pwa-install-btn')) {
+    showInstallButton();
+  }
+}, 2500);
 </script>
+</body>
 </html>
