@@ -1,6 +1,6 @@
 const CACHE_NAME = 'nhat-visa-cache-v1';
 const PRECACHE_URLS = [
-  'v2.1.html',
+  'index.html',
   'manifest.json',
   'icons/icon-192.svg',
   'icons/icon-512.svg'
