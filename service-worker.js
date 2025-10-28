@@ -1,4 +1,4 @@
-const CACHE_NAME = 'nhat-visa-cache-v1';
+const CACHE_NAME = ' "Nhat-Camnang-Visa2.1';
 const PRECACHE_URLS = [
   './index.html',
   './manifest.json',
