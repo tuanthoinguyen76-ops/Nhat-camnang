@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Nhật - Visa · Cẩm nang hồ sơ Visa quốc tế</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
   <style>
     :root{
       --indigo-600: #4f46e5;
@@ -1851,153 +1852,79 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
   });
 });
   </script>
-<!-- Install CTA: always-visible button + iOS helper modal -->
-<style>
-  /* Install button (fixed) */
-  #installCTA {
-    position: fixed;
-    right: 16px;
-    bottom: 18px;
-    z-index: 9999;
-    display: flex;
-    gap: 10px;
-    align-items: center;
-    backdrop-filter: blur(6px);
-  }
-  #installBtn {
-    background: #4f46e5;
-    color: #fff;
-    border: none;
-    padding: 10px 14px;
-    border-radius: 10px;
-    font-weight: 600;
-    box-shadow: 0 6px 20px rgba(79,70,229,0.18);
-    cursor: pointer;
-  }
-  #installBtn[disabled] { opacity: 0.6; cursor: not-allowed; }
-  #installStatus { font-size: 13px; color: #374151; background: #fff; padding: 8px 10px; border-radius: 10px; box-shadow: 0 6px 18px rgba(2,6,23,0.06); display:flex; align-items:center; gap:8px; }
-  /* iOS helper modal */
-  #iosModal { position: fixed; inset: 0; display: none; align-items:center; justify-content:center; background: rgba(2,6,23,0.45); z-index:10000; }
-  #iosModal .box { background: #fff; padding: 18px; width: 92%; max-width: 420px; border-radius: 12px; text-align:left; }
-  #iosModal .box h3 { margin-top: 0; color:#1f2937; }
-  #iosModal .actions { text-align:right; margin-top:12px; }
-  #iosModal .close { background:transparent;border:none;color:#374151;font-weight:600;cursor:pointer;padding:6px 10px;border-radius:8px; }
-</style>
-
-<div id="installCTA" aria-hidden="false">
-  <div id="installStatus" role="status" aria-live="polite">Ứng dụng chưa cài</div>
-  <button id="installBtn" type="button">Cài đặt ứng dụng</button>
-</div>
-
-<!-- iOS helper modal -->
-<div id="iosModal" aria-hidden="true">
-  <div class="box">
-    <h3>Hướng dẫn cài đặt trên iPhone / iPad</h3>
-    <p class="muted">Safari trên iOS không hỗ trợ cài đặt tự động. Vui lòng làm theo các bước sau:</p>
-    <ol style="margin-left:1rem;">
-      <li>Mở trình duyệt Safari (nếu chưa mở).</li>
-      <li>Chạm biểu tượng <strong>Chia sẻ</strong> (hình vuông có mũi tên).</li>
-      <li>Chọn <strong>"Thêm vào Màn hình chính"</strong> (Add to Home Screen).</li>
-      <li>Xác nhận tên ứng dụng rồi chạm <strong>Thêm</strong>.</li>
-    </ol>
-    <div class="actions">
-      <button class="close" id="iosClose">Đóng</button>
-    </div>
-  </div>
-</div>
-
 <script>
-(function(){
-  const installBtn = document.getElementById('installBtn');
-  const installStatus = document.getElementById('installStatus');
-  const iosModal = document.getElementById('iosModal');
-  const iosClose = document.getElementById('iosClose');
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('service-worker.js').then(function(reg){
+    console.log('Service Worker registered', reg);
+  }).catch(function(err){ console.warn('SW registration failed', err); });
+}
 
-  let deferredPrompt = null;
-  let isInstalled = false;
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', (e) => {
+  console.log('beforeinstallprompt fired');
+  e.preventDefault();
+  deferredPrompt = e;
+  showInstallButton();
+  setTimeout(async () => {
+    if (deferredPrompt) {
+      try {
+        deferredPrompt.prompt();
+        const choice = await deferredPrompt.userChoice;
+        console.log('User choice', choice);
+        deferredPrompt = null;
+      } catch (err) {
+        console.log('Prompt failed or dismissed', err);
+      }
+    }
+  }, 1500);
+});
 
-  // Update UI helper
-  function setStatus(text, disabled=false) {
-    installStatus.textContent = text;
-    installBtn.disabled = disabled;
-  }
-
-  // Detect if already installed (standalone)
-  function checkIfInstalled() {
-    // For iOS
-    const isStandaloneIOS = window.navigator.standalone === true;
-    // For modern browsers (Chromium)
-    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || isStandaloneIOS;
-    return isStandalone;
-  }
-
-  // Listen for beforeinstallprompt (Chrome/Edge/Firefox Android)
-  window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault(); // Prevent auto prompt
-    deferredPrompt = e;
-    // Show install CTA
-    setStatus('Ứng dụng sẵn cài (bấm "Cài đặt ứng dụng")', false);
-    installBtn.style.display = 'inline-block';
-  });
-
-  // If app already installed, show accordingly
-  if (checkIfInstalled()) {
-    isInstalled = true;
-    setStatus('Đã cài ứng dụng');
-    installBtn.disabled = true;
-  } else {
-    // default state
-    setStatus('Ứng dụng chưa cài');
-    installBtn.disabled = false;
-  }
-
-  // Click handler
-  installBtn.addEventListener('click', async () => {
-    // If we have deferredPrompt (supported), show native install prompt
+function showInstallButton() {
+  const existing = document.getElementById('pwa-install-btn');
+  if (existing) return;
+  const btn = document.createElement('button');
+  btn.id = 'pwa-install-btn';
+  btn.innerHTML = '📱 Cài ứng dụng';
+  btn.setAttribute('aria-label','Install Nhat-CamnangVisa');
+  btn.style.position = 'fixed';
+  btn.style.right = '14px';
+  btn.style.bottom = '20px';
+  btn.style.padding = '10px 14px';
+  btn.style.borderRadius = '12px';
+  btn.style.border = 'none';
+  btn.style.boxShadow = '0 6px 18px rgba(15,23,42,0.12)';
+  btn.style.background = '#4f46e5';
+  btn.style.color = 'white';
+  btn.style.fontSize = '15px';
+  btn.style.zIndex = 9999;
+  btn.style.cursor = 'pointer';
+  btn.addEventListener('click', async () => {
     if (deferredPrompt) {
       deferredPrompt.prompt();
-      const choiceResult = await deferredPrompt.userChoice;
-      if (choiceResult.outcome === 'accepted') {
-        setStatus('Cài đặt: Chấp nhận');
-        installBtn.disabled = true;
-      } else {
-        setStatus('Cài đặt: Bỏ qua');
-      }
+      const choice = await deferredPrompt.userChoice;
+      console.log('User response to the prompt:', choice);
       deferredPrompt = null;
-      return;
+      btn.remove();
+    } else {
+      alert('Mở menu trình duyệt và chọn "Add to Home Screen" để cài đặt.');
     }
-
-    // If iOS (Safari) — show helper modal
-    const isIOS = /iphone|ipad/i.test(navigator.userAgent);
-    if (isIOS) {
-      iosModal.style.display = 'flex';
-      iosModal.setAttribute('aria-hidden', 'false');
-      return;
-    }
-
-    // Fallback: try to call window.navigator.install (non-standard) or show manual hint
-    // Some browsers (older) may support navigator.standalone or show own UI — show manual hint
-    alert('Trình duyệt không hỗ trợ cài đặt tự động trên thiết bị này. Vui lòng dùng menu trình duyệt và chọn "Thêm vào Màn hình chính" hoặc kiểm tra cài đặt PWA.');
   });
+  document.body.appendChild(btn);
+}
 
-  iosClose.addEventListener('click', () => {
-    iosModal.style.display = 'none';
-    iosModal.setAttribute('aria-hidden', 'true');
-  });
+window.addEventListener('appinstalled', (evt) => {
+  console.log('PWA was installed', evt);
+  const btn = document.getElementById('pwa-install-btn');
+  if (btn) btn.remove();
+});
 
-  // Update status if appinstalled event fires
-  window.addEventListener('appinstalled', (evt) => {
-    isInstalled = true;
-    setStatus('Đã cài ứng dụng');
-    installBtn.disabled = true;
-    // Optionally hide CTA after install
-    // document.getElementById('installCTA').style.display = 'none';
-  });
-
-  // Optional: show CTA only on supported devices — here we keep it always visible per request
-  // Make sure CTA is visible
-  document.getElementById('installCTA').style.display = 'flex';
-})();
+setTimeout(() => {
+  if (!document.getElementById('pwa-install-btn')) {
+    showInstallButton();
+  }
+}, 2500);
 </script>
+
 </body>
 </html>
+```
